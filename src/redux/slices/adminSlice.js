@@ -12,6 +12,8 @@ const adminSlice = createSlice({
     setAdmin: (state, action) => {
       state.admin = action.payload;
       state.isAuthenticated = true;
+      console.log("Admin", state.admin);
+      console.log("Auth", state.isAuthenticated);
     },
     clearAdmin: (state) => {
       state.admin = null;
