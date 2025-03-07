@@ -23,16 +23,10 @@ const App = () => {
       {isAuthenticated && <Navbar />} {/* Navbar visible after login */}
       <div className="flex h-screen">
         {/* Sidebar (Hidden behind navbar) */}
-        {isAuthenticated && (
-          <Sidebar isOpen={isSidebarOpen} toggleSidebar={setIsSidebarOpen} />
-        )}
+        {isAuthenticated && <Sidebar isOpen={isSidebarOpen} toggleSidebar={setIsSidebarOpen} />}
 
         {/* Main Content Area */}
-        <div
-          className={`flex-1 transition-all p-6 ${
-            isAuthenticated ? "md:ml-64" : ""
-          }`}
-        >
+        <div className={`flex-1 transition-all p-6 ${isAuthenticated ? "md:ml-64" : ""}`}>
           <Routes>
             {/* Public Route */}
             <Route path="/login" element={<Login />} />
