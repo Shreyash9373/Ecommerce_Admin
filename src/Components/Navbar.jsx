@@ -28,7 +28,7 @@ const Navbar = () => {
 
         {/* Logo */}
         <NavLink to="/" className="text-xl font-bold">
-          Remos
+          Admin Dashboard
         </NavLink>
       </nav>
 

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import axios from "axios";
 
 const ManageCategory = () => {
   const {
@@ -14,38 +15,119 @@ const ManageCategory = () => {
 
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [catreload, setCatReload] = useState(false);
+
+  // Fetch Categories on Load
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getAllCategories`,
+          { withCredentials: true }
+        );
+        setCategories(response.data.data);
+        console.log("setcaategories", response.data.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to fetch categories");
+      }
+    };
+    fetchCategories();
+  }, [catreload]);
+
+  // Handle Image Selection
+  const handleImageChange = (e) => {
+    setSelectedImage(e.target.files[0]);
+    console.log(selectedImage); // Store the selected file
+  };
 
   // Handle Add or Update Category
-  const onSubmit = (data) => {
-    console.log("Form Data", data);
-    if (editingId !== null) {
-      setCategories((prev) =>
-        prev.map((cat) => (cat.id === editingId ? { ...cat, ...data } : cat))
-      );
-      toast.success("Category updated successfully!");
+  const onSubmit = async (data) => {
+    try {
+      console.log("form data", data);
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("slug", data.slug);
+      formData.append("parentCategory", data.parentCategory);
+      formData.append("description", data.description);
+      formData.append("status", data.status);
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+      }
+      console.log("Data", formData);
+      let response;
+      if (editingId) {
+        // Update Category
+        response = await axios.put(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/updateCategory/${editingId}`,
+          formData,
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        // setCategories((prev) =>
+        //   prev.map((cat) => (cat._id === editingId ? response.data : cat))
+        // );
+        setCatReload((prev) => !prev);
+
+        toast.success("Category updated successfully!");
+      } else {
+        // Add Category
+        response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/addCategory`,
+          formData,
+          {
+            withCredentials: true,
+            // headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        console.log("Response data", response.data);
+
+        setCategories((prevCat) => [...prevCat, response.data]);
+        setCatReload((prev) => !prev);
+
+        toast.success("Category added successfully!");
+      }
+
+      reset();
       setEditingId(null);
-    } else {
-      setCategories([...categories, { id: Date.now(), ...data }]);
-      toast.success("Category added successfully!");
+      setSelectedImage(null);
+    } catch (error) {
+      console.error("Error submitting category:", error);
+      toast.error("Failed to add/update category");
     }
-    reset();
   };
 
   // Edit Category
   const handleEdit = (category) => {
-    setEditingId(category.id);
+    setEditingId(category._id);
     setValue("name", category.name);
     setValue("slug", category.slug);
     setValue("parentCategory", category.parentCategory);
     setValue("description", category.description);
-    setValue("image", category.image);
     setValue("status", category.status);
+    setSelectedImage(null); // Reset selected image
   };
 
   // Delete Category
-  const handleDelete = (id) => {
-    setCategories(categories.filter((cat) => cat.id !== id));
-    toast.success("Category deleted successfully!");
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/deleteCategory/${id}`,
+        { withCredentials: true }
+      );
+      if (response.data) {
+        setCatReload((prev) => !prev);
+        console.log("Delete response", response);
+        setCategories(categories.filter((cat) => cat._id !== id));
+        toast.success("Category deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      toast.error("Failed to delete category");
+    }
   };
 
   return (
@@ -58,9 +140,10 @@ const ManageCategory = () => {
         {/* Category Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 "
+          encType="multipart/form-data"
         >
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Category Name</label>
             <input
               type="text"
@@ -72,46 +155,50 @@ const ManageCategory = () => {
             )}
           </div>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Slug</label>
             <input
               type="text"
               {...register("slug")}
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
             />
-            {errors.slug && (
-              <p className="text-red-500 text-sm">{errors.slug.message}</p>
-            )}
           </div>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Parent Category</label>
-            <input
-              type="text"
+            <select
               {...register("parentCategory")}
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
-            />
+            >
+              <option value="">None</option>{" "}
+              {/* ✅ Default option for main category */}
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Description</label>
             <textarea
               {...register("description")}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full h-10 p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
             ></textarea>
           </div>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Image</label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => console.log(e.target.files[0])}
+              onChange={handleImageChange}
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-semibold">Status</label>
             <select
               {...register("status")}
@@ -151,43 +238,30 @@ const ManageCategory = () => {
           Manage Categories
         </h2>
 
-        {categories.length > 0 ? (
+        {(categories || []).length > 0 ? (
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-200">
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">Slug</th>
-                <th className="p-2 border">Parent</th>
-                <th className="p-2 border">Status</th>
+                <th className="p-2 border">CategoryName</th>
+                <th className="p-2 border">ParentCategory</th>
                 <th className="p-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((cat) => (
-                <tr key={cat.id} className="text-center">
+                <tr key={cat._id}>
                   <td className="p-2 border">{cat.name}</td>
-                  <td className="p-2 border">{cat.slug}</td>
-                  <td className="p-2 border">{cat.parentCategory || "-"}</td>
-                  <td
-                    className={`p-2 border ${
-                      cat.status === "active"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {cat.status}
+                  <td className="p-2 border">
+                    {cat.parentCategory == null
+                      ? cat.name
+                      : cat.parentCategory.name}
                   </td>
-                  <td className="p-2 border flex justify-center gap-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleEdit(cat)}
-                    >
+                  {/* {console.log("categoreis", cat.name, cat.slug)} */}
+                  <td className="p-2 border flex gap-2">
+                    <button onClick={() => handleEdit(cat)}>
                       <FaEdit />
                     </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDelete(cat.id)}
-                    >
+                    <button onClick={() => handleDelete(cat._id)}>
                       <FaTrash />
                     </button>
                   </td>
@@ -196,7 +270,7 @@ const ManageCategory = () => {
             </tbody>
           </table>
         ) : (
-          <p className="text-gray-500 text-center">No categories available</p>
+          <p>No categories available</p>
         )}
       </div>
     </div>
