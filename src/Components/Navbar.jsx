@@ -28,7 +28,7 @@ const Navbar = () => {
 
         {/* Logo */}
         <NavLink to="/" className="text-xl font-bold">
-          Remos
+          Admin Dashboard
         </NavLink>
       </nav>
 
@@ -54,12 +54,12 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink
-                to="/ecommerce"
+                to="/manageCategory"
                 className="flex items-center gap-3 text-gray-600 hover:text-blue-500"
                 onClick={() => setSidebarOpen(false)}
               >
                 <FaShoppingCart className="text-lg" />
-                Ecommerce
+                ManageCategory
               </NavLink>
             </li>
             <li>
