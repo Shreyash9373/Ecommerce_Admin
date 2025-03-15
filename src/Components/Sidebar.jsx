@@ -15,21 +15,24 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     <>
       {/* Sidebar */}
       <div
-        className={`fixed  top-0 left-0 w-64 text-lg flex flex-col items-start border-r border-gray-300 bg-white h-screen p-5 shadow-lg z-40 transform transition-transform duration-300 ease-in-out 
+        className={`fixed mt-12 bottom-0  top-0 left-0 w-64 text-lg flex flex-col items-start border-r border-gray-300 bg-white min-h-screen p-5 shadow-lg z-40 transform transition-transform duration-300 ease-in-out 
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
         style={{ transition: "transform 0.3s ease-in-out" }} // Ensure smooth transition
       >
         {/* <div className="flex justify-between items-center w-full mb-8 mt-4 md:mt-0">
           <h2 className="text-xl font-semibold text-gray-700">Menu</h2>
-          <button className="md:hidden text-gray-500" onClick={() => toggleSidebar(false)}>
+          <button
+            className="md:hidden text-gray-500"
+            onClick={() => toggleSidebar(false)}
+          >
             ✖
           </button>
         </div> */}
 
-        <nav className=" w-full">
+        <nav className=" min-w-full">
           <ul className=" h-full space-y-4">
             {[
-              { to: "/", icon: <HiHome />, label: "Dashboard" },
+              { to: "/dashboard", icon: <HiHome />, label: "Dashboard" },
               {
                 to: "/manageCategory",
                 icon: <FaShoppingCart />,
@@ -37,13 +40,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               },
               {
                 to: "/manageVendor",
-                icon: <FaCubes />,
+                icon: <FaUser />,
                 label: "ManageVendors",
               },
-              { to: "/orders", icon: <FaClipboardList />, label: "Orders" },
-              { to: "/users", icon: <FaUser />, label: "Users" },
-              { to: "/roles", icon: <FaUsers />, label: "Roles" },
-              { to: "/reports", icon: <FaChartPie />, label: "Reports" },
+              {
+                to: "/manageProducts",
+                icon: <FaShoppingCart />,
+                label: "ManageProducts",
+              },
+              // { to: "/users", icon: <FaUser />, label: "Users" },
+              // { to: "/roles", icon: <FaUsers />, label: "Roles" },
+              // { to: "/reports", icon: <FaChartPie />, label: "Reports" },
             ].map(({ to, icon, label }) => (
               <li key={to} className="w-full">
                 <Link

@@ -11,6 +11,8 @@ import Login from "./Auth/Login";
 import Navbar from "./Components/Navbar.jsx";
 import Sidebar from "./Components/Sidebar.jsx"; // Import Sidebar
 import Dashboard from "./Pages/Dashboard";
+import VendorDetails from "./Pages/VendorDetails.jsx";
+import ProductDetails from "./Pages/ProductDetails.jsx";
 import NotFound from "./Pages/NotFound";
 
 const App = () => {
@@ -18,39 +20,51 @@ const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
 
   return (
-    <Router>
-      <ToastContainer />
-      {isAuthenticated && <Navbar />} {/* Navbar visible after login */}
-      <div className="flex h-screen">
-        {/* Sidebar (Hidden behind navbar) */}
+    <div className="mt-14">
+      <Router>
+        <ToastContainer />
         {isAuthenticated && (
-          <Sidebar isOpen={isSidebarOpen} toggleSidebar={setIsSidebarOpen} />
-        )}
+          <div className="">
+            <Navbar />
+          </div>
+        )}{" "}
+        {/* Navbar visible after login */}
+        <div className="flex h-full">
+          {/* Sidebar (Hidden behind navbar) */}
+          {isAuthenticated && (
+            <Sidebar isOpen={isSidebarOpen} toggleSidebar={setIsSidebarOpen} />
+          )}
 
-        {/* Main Content Area */}
-        <div
-          className={`flex-1 transition-all p-6 ${isAuthenticated ? "md:ml-64" : ""}`}
-        >
-          <Routes>
-            {/* Public Route */}
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
+          {/* Main Content Area */}
+          <div
+            className={`flex-1 transition-all  ${isAuthenticated ? "md:ml-64" : ""}`}
+          >
+            <Routes>
+              {/* Public Route */}
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Routes (Require Authentication) */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/manageCategory" element={<ManageCategory />} />
-              <Route path="/manageProduct" element={<ManageProduct />} />
-              <Route path="/manageVendor" element={<ManageVendor />} />
-              <Route path="/manageUser" element={<ManageUser />} />
-            </Route>
+              {/* Protected Routes (Require Authentication) */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/manageCategory" element={<ManageCategory />} />
+                <Route path="/manageProducts" element={<ManageProduct />} />
+                <Route
+                  path="/manageProducts/:id"
+                  element={<ProductDetails />}
+                />
+                <Route path="/manageVendor" element={<ManageVendor />} />
+                <Route path="/manageVendor/:id" element={<VendorDetails />} />
+                <Route path="/manageUser" element={<ManageUser />} />
+              </Route>
 
-            {/* Catch-All 404 Page */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* Catch-All 404 Page */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 };
 
