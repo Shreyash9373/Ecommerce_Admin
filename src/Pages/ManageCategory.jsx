@@ -131,7 +131,7 @@ const ManageCategory = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="px-3 py-4 bg-gray-100 min-h-screen max-w-full z-[999]">
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           {editingId ? "Edit Category" : "Add Category"}
@@ -233,7 +233,7 @@ const ManageCategory = () => {
       </div>
 
       {/* Categories Table */}
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-md max-w-full overflow-x-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           Manage Categories
         </h2>

@@ -15,9 +15,9 @@ const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <>
+    <nav>
       {/* Navbar */}
-      <nav className="bg-green-800 text-white sticky top-0 shadow-md z-50 w-full p-4 flex justify-between items-center">
+      <div className="fixed top-0 bg-blue-800 text-white shadow-md z-50 w-full py-3 px-2 flex justify-between items-center">
         {/* Toggle Sidebar Button */}
         <button
           className="md:hidden text-white text-2xl"
@@ -30,11 +30,11 @@ const Navbar = () => {
         <NavLink to="/" className="text-xl font-bold">
           Admin Dashboard
         </NavLink>
-      </nav>
+      </div>
 
       {/* Mobile Sidebar */}
-      {sidebarOpen && (
-        <div className="fixed top-0 left-0 w-64 h-full bg-white shadow-lg p-5 z-50 md:hidden">
+      {/* {sidebarOpen && (
+        <div className="fixed top-0 bottom-0 min-w-full left-0 w-64 h-full bg-teal-500 shadow-lg p-5 z-50 md:hidden">
           <button
             className="absolute top-4 right-4 text-2xl text-gray-600"
             onClick={() => setSidebarOpen(false)}
@@ -114,8 +114,8 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-      )}
-    </>
+      )} */}
+    </nav>
   );
 };
 
