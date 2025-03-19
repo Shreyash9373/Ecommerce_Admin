@@ -15,12 +15,12 @@ const adminSlice = createSlice({
       console.log("Admin", state.admin);
       console.log("Auth", state.isAuthenticated);
     },
-    clearAdmin: (state) => {
+    logoutAdmin: (state) => {
       state.admin = null;
       state.isAuthenticated = false;
     },
   },
 });
 
-export const { setAdmin, clearAdmin } = adminSlice.actions;
+export const { setAdmin, logoutAdmin } = adminSlice.actions;
 export default adminSlice.reducer;

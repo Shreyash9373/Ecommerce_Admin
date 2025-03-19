@@ -12,6 +12,9 @@ const ManageVendor = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("pending");
   const [vendors, setVendors] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); //  Search Query
+  const [filteredVendors, setFilteredVendors] = useState([]); //  Filtered Vendors
+  const [allVendors, setAllVendors] = useState([]);
 
   //Pagination logic
   // totalPages = Math.ceil(vendors.length / recordsPerPage);
@@ -19,7 +22,10 @@ const ManageVendor = () => {
 
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentVendors = vendors.slice(indexOfFirstRecord, indexOfLastRecord);
+  const currentVendors = filteredVendors.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -50,13 +56,74 @@ const ManageVendor = () => {
         });
         console.log("Response", response.data.data);
         setVendors(response.data.data);
+        setFilteredVendors(response.data.data);
         console.log("PendingVendors", vendors);
       } catch (error) {
         console.log("Error", error);
       }
     };
+
+    // const fetchVendor = async () => {
+    //   try {
+    //     const response = await axios.get(
+    //       `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getSearchVendor`,
+    //       {
+    //         params: {
+    //           search: searchQuery, // 🔍 Send search query
+    //           status: status,
+    //           page: currentPage, // 📌 Pagination
+    //           limit: recordsPerPage,
+    //         },
+    //         withCredentials: true,
+    //       }
+    //     );
+
+    //     setVendors(response.data.vendors);
+    //     setTotalPages(response.data.totalPages);
+    //   } catch (error) {
+    //     console.error("Error fetching vendors:", error);
+    //   }
+    // };
     fetchVendor();
-  }, [dispatch, recordsPerPage, status]);
+  }, [status, dispatch, recordsPerPage]);
+  // 🔍 Search Functionality
+  useEffect(() => {
+    var filtered;
+    if (searchQuery === "") {
+      filtered = vendors.filter(
+        (vendor) =>
+          vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.phone.includes(searchQuery)
+      );
+    } else if (searchQuery != "") {
+      filtered = allVendors.filter(
+        (vendor) =>
+          vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          vendor.phone.includes(searchQuery)
+      );
+    }
+    setFilteredVendors(filtered);
+  }, [searchQuery, vendors, allVendors]);
+  useEffect(() => {
+    try {
+      const fetchAllVendors = async () => {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getAllVendors`,
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("AllVendorsResponse", response.data.data);
+        setAllVendors(response.data.data);
+      };
+      fetchAllVendors();
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, []);
+
   const approveStatus = async (vendorId) => {
     try {
       console.log("vid", vendorId);
@@ -68,6 +135,11 @@ const ManageVendor = () => {
         }
       );
       setStatus("approved");
+      // setVendors((prevVendors) =>
+      //   prevVendors.map((vendor) =>
+      //     vendor._id === vendorId ? { ...vendor, status: "approved" } : vendor
+      //   )
+      // );
       console.log("ApprovedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
@@ -84,6 +156,11 @@ const ManageVendor = () => {
         }
       );
       setStatus("rejected");
+      // setVendors((prevVendors) =>
+      //   prevVendors.map((vendor) =>
+      //     vendor._id === vendorId ? { ...vendor, status: "rejected" } : vendor
+      //   )
+      // );
       console.log("RejectedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
@@ -93,6 +170,14 @@ const ManageVendor = () => {
     <div className="py-4 px-1 bg-white shadow-lg rounded-lg ">
       <h1 className="text-3xl font-semibold mb-2 text-gray-800">Vendors</h1>
       <p className="text-gray-600">List of Vendors</p>
+      {/*  Search Input */}
+      <input
+        type="text"
+        placeholder="Search by name, email, or phone..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 my-3"
+      />
 
       {/* Status Dropdown */}
       <div className="w-full md:w-[50%] mt-4 mb-6">
@@ -128,12 +213,14 @@ const ManageVendor = () => {
                   key={vendor._id}
                   className="text-center text-sm even:bg-gray-100"
                 >
-                  <td className="p-3 border">{vendor._id}</td>
-                  <td className="p-3 border">{vendor.name}</td>
-                  <td className="p-3 border">{vendor.email}</td>
-                  <td className="p-3 border">{vendor.phone}</td>
-                  <td className="p-3 border">{vendor.storeName}</td>
-                  <td className="p-3 border capitalize">{vendor.status}</td>
+                  <td className="p-3 border">{vendor._id || "NA"}</td>
+                  <td className="p-3 border">{vendor.name || "NA"}</td>
+                  <td className="p-3 border">{vendor.email || "NA"}</td>
+                  <td className="p-3 border">{vendor.phone || "NA"}</td>
+                  <td className="p-3 border">{vendor.storeName || "NA"}</td>
+                  <td className="p-3 border capitalize">
+                    {vendor.status || "NA"}
+                  </td>
                   <td className="p-3 border flex flex-wrap gap-2 justify-center">
                     <button
                       onClick={() => approveStatus(vendor._id)}

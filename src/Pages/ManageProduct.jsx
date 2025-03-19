@@ -12,6 +12,8 @@ const ManageProduct = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("pending");
   const [products, setproducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); //  Search Query
+  const [filteredProducts, setFilteredProducts] = useState([]); //  Filtered Vendors
 
   //Pagination logic
   // totalPages = Math.ceil(products.length / recordsPerPage);
@@ -19,7 +21,10 @@ const ManageProduct = () => {
 
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentproducts = products.slice(indexOfFirstRecord, indexOfLastRecord);
+  const currentproducts = filteredProducts.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -50,6 +55,7 @@ const ManageProduct = () => {
         });
         console.log("Response", response.data.data);
         setproducts(response.data.data);
+        setFilteredProducts(response.data.data);
         console.log("Pendingproducts", products);
       } catch (error) {
         console.log("Error", error);
@@ -57,6 +63,24 @@ const ManageProduct = () => {
     };
     fetchproduct();
   }, [dispatch, recordsPerPage, status]);
+
+  //  Search Functionality
+  useEffect(() => {
+    const filtered = products.filter(
+      (product) =>
+        (product.name?.toLowerCase() || "").includes(
+          searchQuery.toLowerCase()
+        ) ||
+        (product.category?.toLowerCase() || "").includes(
+          searchQuery.toLowerCase()
+        ) ||
+        (product.subCategory?.toLowerCase() || "").includes(
+          searchQuery.toLowerCase()
+        ) ||
+        (product.brand?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchQuery, products]);
   const approveStatus = async (productId) => {
     try {
       console.log("pid", productId);
@@ -93,7 +117,14 @@ const ManageProduct = () => {
     <div className="py-4 px-1 bg-white shadow-lg rounded-lg ">
       <h1 className="text-3xl font-semibold mb-2 text-gray-800">Products</h1>
       <p className="text-gray-600">List of products</p>
-
+      {/*  Search Input */}
+      <input
+        type="text"
+        placeholder="Search by name,category,subCategory or brand..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 my-3"
+      />
       {/* Status Dropdown */}
       <div className="w-full md:w-[50%] mt-4 mb-6">
         <select
@@ -128,12 +159,14 @@ const ManageProduct = () => {
                   key={product._id}
                   className="text-center text-sm even:bg-gray-100"
                 >
-                  <td className="p-3 border">{product._id}</td>
-                  <td className="p-3 border">{product.name}</td>
-                  <td className="p-3 border">{product.category}</td>
-                  <td className="p-3 border">{product.subCategory}</td>
-                  <td className="p-3 border">{product.brand}</td>
-                  <td className="p-3 border capitalize">{product.price}</td>
+                  <td className="p-3 border">{product._id || "NA"}</td>
+                  <td className="p-3 border">{product.name || "NA"}</td>
+                  <td className="p-3 border">{product.category || "NA"}</td>
+                  <td className="p-3 border">{product.subCategory || "NA"}</td>
+                  <td className="p-3 border">{product.brand || "NA"}</td>
+                  <td className="p-3 border capitalize">
+                    {product.price || "NA"}
+                  </td>
                   <td className="p-3 border flex flex-wrap gap-2 justify-center">
                     <button
                       onClick={() => approveStatus(product._id)}

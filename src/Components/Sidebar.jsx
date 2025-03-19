@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import {
   FaShoppingCart,
@@ -7,10 +8,36 @@ import {
   FaUsers,
   FaChartPie,
 } from "react-icons/fa";
+import { HiMenu, HiX } from "react-icons/hi";
+
 import { HiHome, HiMenuAlt3 } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { logoutAdmin } from "../redux/slices/adminSlice";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const LogoutAdmin = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data) {
+        dispatch(logoutAdmin());
+        navigate("/login");
+        toast.success(response.data.message);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      toast.error(error);
+    }
+  };
   return (
     <>
       {/* Sidebar */}
@@ -29,8 +56,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </button>
         </div> */}
 
-        <nav className=" min-w-full">
-          <ul className=" h-full space-y-4">
+        <nav className="min-w-full h-[90%] flex flex-col">
+          <ul className="flex-grow space-y-4">
             {[
               { to: "/dashboard", icon: <HiHome />, label: "Dashboard" },
               {
@@ -38,19 +65,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 icon: <FaShoppingCart />,
                 label: "ManageCategory",
               },
-              {
-                to: "/manageVendor",
-                icon: <FaUser />,
-                label: "ManageVendors",
-              },
+              { to: "/manageVendor", icon: <FaUser />, label: "ManageVendors" },
               {
                 to: "/manageProducts",
                 icon: <FaShoppingCart />,
                 label: "ManageProducts",
               },
-              // { to: "/users", icon: <FaUser />, label: "Users" },
-              // { to: "/roles", icon: <FaUsers />, label: "Roles" },
-              // { to: "/reports", icon: <FaChartPie />, label: "Reports" },
             ].map(({ to, icon, label }) => (
               <li key={to} className="w-full">
                 <Link
@@ -64,6 +84,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               </li>
             ))}
           </ul>
+
+          {/* ✅ Logout Button at Bottom */}
+          <button
+            onClick={() => LogoutAdmin()}
+            className="px-2 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 mt-auto md:hidden"
+          >
+            Logout
+          </button>
         </nav>
       </div>
 
@@ -78,10 +106,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Hamburger Menu (Mobile Only) */}
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <button
-          className="text-2xl text-gray-700"
+          className="text-2xl text-white"
           onClick={() => toggleSidebar(!isOpen)}
         >
-          <HiMenuAlt3 />
+          {isOpen ? <HiX /> : <HiMenu />}
         </button>
       </div>
     </>
