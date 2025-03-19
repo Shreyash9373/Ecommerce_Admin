@@ -4,7 +4,7 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 const images = [
   "https://m.media-amazon.com/images/I/71kOe866xHL._SL1500_.jpg",
@@ -15,8 +15,11 @@ const images = [
 const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [images, setImages] = useState([]);
+  const [vendor, setVendor] = useState({});
   const [selectedImage, setSelectedImage] = useState();
+  const [modal, setModal] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -31,6 +34,7 @@ const ProductDetails = () => {
         console.log("res", response);
         setProduct(response.data.data.product);
         setImages(response.data.data.product.images);
+
         //console.log("Response", response.data.data);
         // console.log("Vendor", vendor);
       } catch (error) {
@@ -43,9 +47,48 @@ const ProductDetails = () => {
     console.log("Updated Product:", product);
     console.log("Images", images);
     setSelectedImage(images[0]);
-    console.log("Initial img", images[0]);
-    console.log("name", product.name);
+    console.log("vendor", vendor);
   }, [product]);
+  useEffect(() => {
+    if (product?.vendorId) {
+      // Only fetch if `vendorId` exists
+      const fetchVendor = async () => {
+        try {
+          const vendorDatares = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URI}/api/v1/vendor/get-vendorById/${product.vendorId}`,
+            { withCredentials: true }
+          );
+          console.log("vendor data", vendorDatares);
+          setVendor(vendorDatares.data.data.vendor);
+        } catch (error) {
+          console.log("Error fetching vendor", error);
+        }
+      };
+
+      fetchVendor();
+    }
+  }, [product]);
+  useEffect(() => {
+    if (modal) {
+      // Save the current scroll position
+      const scrollY = window.scrollY;
+
+      // Apply styles to prevent scrolling
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflowY = "scroll"; // Prevent layout shift
+
+      // Cleanup function to restore scrolling when modal closes
+      return () => {
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        document.body.style.overflowY = "";
+        window.scrollTo(0, scrollY); // Restore scroll position
+      };
+    }
+  }, [modal]);
   const hiddenKeys = [
     "_id",
     "name",
@@ -62,6 +105,7 @@ const ProductDetails = () => {
     "brand",
     "category",
     "subCategory",
+    "vendorId",
   ];
   return (
     <div className="">
@@ -106,6 +150,13 @@ const ProductDetails = () => {
             <p>SubCategory</p>
             <p>{product.subCategory}</p>
           </div>
+          <div
+            onClick={() => navigate(`/manageVendor/${vendor._id}`)}
+            className="flex justify-between my-2 mx-3"
+          >
+            <p>Vendor Name</p>
+            <p>{vendor.name}</p>
+          </div>
           {Object.entries(product)
             .filter(([key]) => !hiddenKeys.includes(key))
             .map(([key, value]) =>
@@ -134,7 +185,7 @@ const ProductDetails = () => {
         {/* Left Section - Thumbnails */}
         <div className="sticky top-10 flex items-center h-fit gap-3 w-[70%]">
           <div className="flex flex-col gap-2">
-            {images.map((img, index) => (
+            {images.slice(0, 3).map((img, index) => (
               <img
                 key={index}
                 src={img}
@@ -145,10 +196,18 @@ const ProductDetails = () => {
                 onClick={() => setSelectedImage(img)}
               />
             ))}
+            {images.length > 3 && (
+              <div
+                onClick={() => setModal(true)}
+                className="w-16 h-16 flex justify-center items-center object-cover rounded cursor-pointer border-2 border-black bg-opacity-40 bg-gray-400"
+              >
+                {`+${images.length - 3}`}
+              </div>
+            )}
           </div>
 
           {/* Center - Main Image */}
-          <div className=" border border-gray-500 rounded-md shadow-md w-[80%] ">
+          <div className=" border border-gray-500 rounded-md shadow-md w-[60%] h-[60%]  ">
             <img
               src={selectedImage}
               alt="Main Product"
@@ -180,6 +239,14 @@ const ProductDetails = () => {
             <span className="font-semibold">SubCategory : </span>
             {`  ${product.subCategory}`}
           </p>
+          <p
+            className="cursor-pointer hover:text-blue-800"
+            onClick={() => navigate(`/manageVendor/${vendor._id}`)}
+          >
+            {" "}
+            <span className="font-semibold">VendorName : </span>
+            {`  ${vendor.name}`}
+          </p>
 
           {Object.entries(product)
             .filter(([key]) => !hiddenKeys.includes(key))
@@ -202,6 +269,44 @@ const ProductDetails = () => {
             )}
         </div>
       </div>
+
+      {/* Modal */}
+      {modal && (
+        <div
+          onClick={() => setModal(false)}
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 "
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">All Images</h2>
+              <button
+                onClick={() => setModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {images.map((img, index) => (
+                <div key={index} className="aspect-square">
+                  <img
+                    src={img}
+                    alt={`Product image ${index + 1}`}
+                    className="w-full h-full object-cover rounded cursor-pointer hover:opacity-90"
+                    onClick={() => {
+                      setSelectedImage(img);
+                      setModal(false);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

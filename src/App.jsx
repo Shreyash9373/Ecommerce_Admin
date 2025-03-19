@@ -14,15 +14,34 @@ import Dashboard from "./Pages/Dashboard";
 import VendorDetails from "./Pages/VendorDetails.jsx";
 import ProductDetails from "./Pages/ProductDetails.jsx";
 import NotFound from "./Pages/NotFound";
+import ResetPassword from "./Pages/ResetPassword.jsx";
 
 const App = () => {
   const { isAuthenticated } = useSelector((state) => state.admin);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
 
   return (
-    <div className="mt-14">
+    <div className="mt-16">
       <Router>
-        <ToastContainer />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          toastStyle={{
+            maxWidth: "300px",
+            borderRadius: "4px",
+            fontSize: "0.875rem",
+            padding: "8px",
+            color: "#050505",
+            fontFamily: "sans-serif",
+          }}
+        />
         {isAuthenticated && (
           <div className="">
             <Navbar />
@@ -43,6 +62,7 @@ const App = () => {
               {/* Public Route */}
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset" element={<ResetPassword />} />
 
               {/* Protected Routes (Require Authentication) */}
               <Route element={<ProtectedRoute />}>
