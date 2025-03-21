@@ -67,10 +67,10 @@ const ForgotPassword = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/reset-password`,
         {
-          email: data.email,
+          email,
           password: data.password,
           confirmPassword: data.confirmPassword,
-          resetToken: Cookies.get("resetToken"),
+          // resetToken: Cookies.get("resetToken"),
         }
       );
 
@@ -140,13 +140,6 @@ const ForgotPassword = () => {
             className="space-y-6"
           >
             <div className="space-y-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300"
-              />
               <input
                 type="password"
                 {...register("password", {
