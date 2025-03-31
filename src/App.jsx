@@ -15,10 +15,14 @@ import VendorDetails from "./Pages/VendorDetails.jsx";
 import ProductDetails from "./Pages/ProductDetails.jsx";
 import NotFound from "./Pages/NotFound";
 import ResetPassword from "./Pages/ResetPassword.jsx";
+import useAuthCheck from "./Auth/useAuthCheck.jsx";
 
 const App = () => {
-  const { isAuthenticated } = useSelector((state) => state.admin);
+  useAuthCheck();
+  const { isAuthenticated, loading } = useSelector((state) => state.admin);
+  // const { isAuthenticated } = useAuthCheck();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
+  // Call useAuthCheck once at the app level to initialize authentication
 
   return (
     <div className="mt-16">

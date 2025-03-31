@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setAdmin } from "../redux/slices/adminSlice.js";
 import { useNavigate } from "react-router-dom";
+import useAuthCheck from "./useAuthCheck.jsx";
 
 const Login = () => {
   const {
