@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentPage, setTotalPages } from "../redux/slices/paginationSlice";
 
 const ManageCategory = () => {
   const {
@@ -17,6 +19,26 @@ const ManageCategory = () => {
   const [editingId, setEditingId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [catreload, setCatReload] = useState(false);
+  const [filteredCategory, setFilteredCategory] = useState([]);
+  //Pagination Logic
+  const dispatch = useDispatch();
+  const { currentPage, recordsPerPage, totalPages } = useSelector(
+    (state) => state.pagination
+  );
+
+  const indexofLastRecord = currentPage * recordsPerPage;
+  const indexofFirstRecord = indexofLastRecord - recordsPerPage;
+  const currentCategory = filteredCategory.slice(
+    indexofFirstRecord,
+    indexofLastRecord
+  );
+  dispatch(setTotalPages(Math.ceil(categories.length / recordsPerPage)));
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      dispatch(setCurrentPage(newPage));
+    }
+  };
 
   // Fetch Categories on Load
   useEffect(() => {
@@ -27,6 +49,7 @@ const ManageCategory = () => {
           { withCredentials: true }
         );
         setCategories(response.data.data);
+        setFilteredCategory(response.data.data);
         console.log("setcaategories", response.data.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -238,7 +261,7 @@ const ManageCategory = () => {
           Manage Categories
         </h2>
 
-        {(categories || []).length > 0 ? (
+        {(currentCategory || []).length > 0 ? (
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-200">
@@ -248,7 +271,7 @@ const ManageCategory = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((cat) => (
+              {currentCategory.map((cat) => (
                 <tr key={cat._id}>
                   <td className="p-2 border">{cat.name}</td>
                   <td className="p-2 border">
@@ -273,6 +296,29 @@ const ManageCategory = () => {
           <p>No categories available</p>
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center my-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+          >
+            prev
+          </button>
+          <div className="mx-2 font-bold">
+            {"<<"}
+            {currentPage}
+            {">>"}
+          </div>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

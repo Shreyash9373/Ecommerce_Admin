@@ -13,7 +13,7 @@ const ManageProduct = () => {
   const [status, setStatus] = useState("pending");
   const [products, setproducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); //  Search Query
-  const [filteredProducts, setFilteredProducts] = useState([]); //  Filtered Vendors
+  const [filteredProducts, setFilteredProducts] = useState([]); //  Filtered Categories
 
   //Pagination logic
   // totalPages = Math.ceil(products.length / recordsPerPage);
