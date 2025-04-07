@@ -22,6 +22,7 @@ import NotFound from "./Pages/NotFound";
 import ResetPassword from "./Pages/ResetPassword.jsx";
 import useAuthCheck from "./Auth/useAuthCheck.jsx";
 import ManageOrder from "./Pages/ManageOrder.jsx";
+import AdminChatBot from "./Components/AdminChatBot.jsx";
 
 const AppContent = () => {
   useAuthCheck();
@@ -65,6 +66,8 @@ const AppContent = () => {
         {isAuthenticated && (
           <Sidebar isOpen={isSidebarOpen} toggleSidebar={setIsSidebarOpen} />
         )}
+        {isAuthenticated && <AdminChatBot />}
+
         <div
           className={`flex-1 transition-all ${isAuthenticated ? "md:ml-64" : ""}`}
         >
