@@ -9,6 +9,7 @@ import {
   FaChartPie,
 } from "react-icons/fa";
 import { HiMenu, HiX } from "react-icons/hi";
+import { MdCategory } from "react-icons/md";
 
 import { HiHome, HiMenuAlt3 } from "react-icons/hi";
 import { useDispatch } from "react-redux";
@@ -62,14 +63,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               { to: "/dashboard", icon: <HiHome />, label: "Dashboard" },
               {
                 to: "/manageCategory",
-                icon: <FaShoppingCart />,
-                label: "ManageCategory",
+                icon: <MdCategory />,
+                label: "Category",
               },
-              { to: "/manageVendor", icon: <FaUser />, label: "ManageVendors" },
+              { to: "/manageVendor", icon: <FaUser />, label: "Vendors" },
               {
                 to: "/manageProducts",
                 icon: <FaShoppingCart />,
-                label: "ManageProducts",
+                label: "Products",
+              },
+              {
+                to: "/manageOrder",
+                icon: <FaClipboardList />,
+                label: "Orders",
               },
             ].map(({ to, icon, label }) => (
               <li key={to} className="w-full">

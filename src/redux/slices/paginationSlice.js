@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentPage: 1,
-  recordsPerPage: 3, // Default records per page
+  recordsPerPage: 2, // Default records per page
   totalPages: 0, // Will be updated dynamically
 };
 
