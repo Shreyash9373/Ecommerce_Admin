@@ -15,6 +15,7 @@ const ManageVendor = () => {
   const [searchQuery, setSearchQuery] = useState(""); //  Search Query
   const [filteredVendors, setFilteredVendors] = useState([]); //  Filtered Vendors
   const [allVendors, setAllVendors] = useState([]);
+  const [searchTotalPages, setSearchTotalPages] = useState(1); //  Search Total Pages
 
   //Pagination logic
   // totalPages = Math.ceil(vendors.length / recordsPerPage);
@@ -85,44 +86,76 @@ const ManageVendor = () => {
     //   }
     // };
     fetchVendor();
-  }, [status, dispatch, recordsPerPage]);
+  }, [status, dispatch, recordsPerPage, searchQuery]);
   // 🔍 Search Functionality
   useEffect(() => {
     var filtered;
-    if (searchQuery === "") {
-      filtered = vendors.filter(
-        (vendor) =>
-          vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          vendor.phone.includes(searchQuery)
-      );
-    } else if (searchQuery != "") {
-      filtered = allVendors.filter(
-        (vendor) =>
-          vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          vendor.phone.includes(searchQuery)
-      );
-    }
-    setFilteredVendors(filtered);
-  }, [searchQuery, vendors, allVendors]);
-  useEffect(() => {
-    try {
-      const fetchAllVendors = async () => {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getAllVendors`,
-          {
-            withCredentials: true,
-          }
+    // if (searchQuery === "") {
+    //   filtered = vendors.filter(
+    //     (vendor) =>
+    //       vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //       vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //       vendor.phone.includes(searchQuery)
+    //   );
+    // } else if (searchQuery != "") {
+    //   filtered = allVendors.filter(
+    //     (vendor) =>
+    //       vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //       vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //       vendor.phone.includes(searchQuery)
+    //   );
+    // }
+
+    const searchVendor = async () => {
+      if (searchQuery === "") {
+        filtered = vendors.filter(
+          (vendor) =>
+            vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            vendor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            vendor.phone.includes(searchQuery)
         );
-        console.log("AllVendorsResponse", response.data.data);
-        setAllVendors(response.data.data);
-      };
-      fetchAllVendors();
-    } catch (error) {
-      console.log("Error", error);
-    }
-  }, []);
+        setFilteredVendors(filtered);
+      } else if (searchQuery !== "") {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getSearchVendor`,
+            {
+              params: {
+                search: searchQuery,
+                page: currentPage,
+                limit: recordsPerPage,
+              },
+              withCredentials: true,
+            }
+          );
+          console.log("SearchResponse", response.data.vendors);
+          setSearchTotalPages(response.data.totalPages);
+          setFilteredVendors(response.data.vendors || []);
+        } catch (error) {
+          console.error("Search Fetch Error:", error);
+          setFilteredVendors([]);
+        }
+      }
+    };
+    searchVendor();
+  }, [searchQuery, currentPage]);
+  // useEffect(() => {
+  //   try {
+  //     const fetchAllVendors = async () => {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getAllVendors`,
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       console.log("AllVendorsResponse", response.data.data);
+  //       setAllVendors(response.data.data);
+  //     };
+  //     fetchAllVendors();
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //   }
+  // }, []);
 
   const approveStatus = async (vendorId) => {
     try {
@@ -263,7 +296,7 @@ const ManageVendor = () => {
           </tbody>
         </table>
       </div>
-      {totalPages > 1 && (
+      {(totalPages > 1 || searchTotalPages > 1) && (
         <div className="flex justify-center items-center my-4">
           <button
             disabled={currentPage === 1}
