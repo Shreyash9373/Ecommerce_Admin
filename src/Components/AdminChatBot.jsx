@@ -81,7 +81,7 @@ const AdminChatBot = () => {
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4">
           <h2 className="text-lg font-semibold mb-2">Hi Admin! 👋</h2>
-          <p className="text-sm mb-3 text-gray-600">Try one of these:</p>
+          <p className="text-sm mb-3 text-gray-600">How can i help you 😊</p>
           <ul className="space-y-2 mb-4">
             {promptSuggestions.map((item, idx) => (
               <li key={idx}>

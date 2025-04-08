@@ -20,6 +20,7 @@ const ManageCategory = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [catreload, setCatReload] = useState(false);
   const [filteredCategory, setFilteredCategory] = useState([]);
+  const [parentCategory, setParentCategory] = useState(null);
   //Pagination Logic
   const dispatch = useDispatch();
   const { currentPage, recordsPerPage, totalPages } = useSelector(
@@ -128,7 +129,11 @@ const ManageCategory = () => {
     setEditingId(category._id);
     setValue("name", category.name);
     setValue("slug", category.slug);
-    setValue("parentCategory", category.parentCategory);
+    console.log("slug", category.slug);
+    setValue("parentCategory", category.parentCategory?._id || "");
+    console.log("Parentcategory", category.parentCategory?.name);
+    setParentCategory(category.parentCategory?.name || "");
+    console.log("category", parentCategory);
     setValue("description", category.description);
     setValue("status", category.status);
     setSelectedImage(null); // Reset selected image
@@ -193,7 +198,8 @@ const ManageCategory = () => {
               {...register("parentCategory")}
               className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
             >
-              <option value="">None</option>{" "}
+              <option value="">None</option>
+
               {/* ✅ Default option for main category */}
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
