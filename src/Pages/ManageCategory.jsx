@@ -128,7 +128,7 @@ const ManageCategory = () => {
     setEditingId(category._id);
     setValue("name", category.name);
     setValue("slug", category.slug);
-    setValue("parentCategory", category.parentCategory);
+    setValue("parentCategory", category.parentCategory?._id || "");
     setValue("description", category.description);
     setValue("status", category.status);
     setSelectedImage(null); // Reset selected image
