@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentPage, setTotalPages } from "../redux/slices/paginationSlice";
 
 const ManageVendor = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { currentPage, recordsPerPage, totalPages } = useSelector(
     (state) => state.pagination
   );
@@ -38,8 +39,20 @@ const ManageVendor = () => {
     const selectedValue = event.target.value;
     setStatus(selectedValue);
     console.log(status);
+    navigate(`/manageVendor?status=${selectedValue}`);
     // onChange(selectedValue); // Notify parent component (if needed)
   };
+
+  // useeffect to set default dropdown value based on query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const queryStatus = params.get("status");
+
+    // Update default dropdown if query param exists
+    if (queryStatus) {
+      setStatus(queryStatus);
+    }
+  }, [location.search]);
   useEffect(() => {
     const fetchVendor = async () => {
       try {

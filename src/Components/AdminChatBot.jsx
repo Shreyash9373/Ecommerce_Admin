@@ -11,15 +11,15 @@ const AdminChatBot = () => {
   const promptSuggestions = [
     {
       text: "Show me pending products",
-      route: "/manageProducts", // update to match your route
+      route: "/manageProducts?status=pending", // update to match your route
     },
     {
       text: "Show me approved products",
-      route: "/manageProduct", // if applicable
+      route: "/manageProducts?status=approved", // if applicable
     },
     {
       text: "Show me approved vendors",
-      route: "/manageVendor",
+      route: "/manageVendor?status=approved",
     },
   ];
 
@@ -38,7 +38,22 @@ const AdminChatBot = () => {
 
       switch (intent) {
         case "show pending products":
-          navigate("/manageProducts");
+          navigate("/manageProducts?status=pending");
+          break;
+        case "show approved products":
+          navigate("/manageProducts?status=approved");
+          break;
+        case "show rejected products":
+          navigate("/manageProducts?status=rejected");
+          break;
+        case "show pending Vendors":
+          navigate("/manageVendor?status=pending");
+          break;
+        case "show approved vendors":
+          navigate("/manageVendor?status=approved");
+          break;
+        case "show rejected vendors":
+          navigate("/manageVendor?status=rejected");
           break;
         case "show out-of-stock products":
           navigate("/manageProducts?status=out-of-stock");
@@ -46,6 +61,7 @@ const AdminChatBot = () => {
         case "show recent orders":
           navigate("/manageOrder?filter=recent");
           break;
+
         case "show user statistics":
           navigate("/dashboard");
           break;
@@ -64,7 +80,7 @@ const AdminChatBot = () => {
     setQuery(text);
     setBotResponse(`You selected: ${text}`);
     navigate(route);
-    setIsOpen(false);
+    // setIsOpen(false);
   };
 
   return (
