@@ -1,12 +1,58 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import chatbot from "../assets/chatbot.png";
+import mic from "../assets/mic.png";
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition = new SpeechRecognition();
+recognition.continuous = false;
+recognition.interimResults = false;
+recognition.lang = "en-US";
+
+const speakText = (text) => {
+  if (!window.speechSynthesis) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.pitch = 1;
+  utterance.rate = 1;
+  utterance.volume = 1;
+  window.speechSynthesis.speak(utterance);
+};
 
 const AdminChatBot = () => {
   const [query, setQuery] = useState("");
   const [botResponse, setBotResponse] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  let isVoiceQuery = false;
+
+  const handleVoiceInput = () => {
+    isVoiceQuery = true;
+    recognition.start();
+
+    recognition.onstart = () => {
+      console.log("Voice recognition started...");
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript); // Fill the input with recognized speech
+      setBotResponse("Listening...");
+      handleSend(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+    };
+
+    recognition.onend = () => {
+      console.log("Voice recognition ended.");
+    };
+  };
 
   const promptSuggestions = [
     {
@@ -23,18 +69,33 @@ const AdminChatBot = () => {
     },
   ];
 
-  const handleSend = async () => {
-    if (!query.trim()) return;
+  const handleSend = async (customQuery) => {
+    const finalQuery = typeof customQuery === "string" ? customQuery : query;
+
+    if (
+      !finalQuery ||
+      typeof finalQuery !== "string" ||
+      finalQuery.trim() === ""
+    ) {
+      return;
+    }
 
     try {
+      setBotResponse("Thinking...");
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/chat`,
-        { query },
+        { query: finalQuery },
         { withCredentials: true }
       );
 
       const { intent, message } = res.data.response;
       setBotResponse(message);
+
+      // Speak only if the query was voice triggered
+      if (isVoiceQuery) {
+        speakText(message);
+        isVoiceQuery = false; // reset after speaking
+      }
 
       switch (intent) {
         case "show pending products":
@@ -55,13 +116,27 @@ const AdminChatBot = () => {
         case "show rejected vendors":
           navigate("/manageVendor?status=rejected");
           break;
+        case "show top products":
+          const range = res.data.response.parameters?.range || "week";
+          const productRes = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getTopSellingProducts?range=${range}`,
+            { withCredentials: true }
+          );
+
+          const topProducts = productRes.data.topProducts;
+          const list = topProducts
+            .map((p, idx) => `${idx + 1}. ${p.name} (${p.totalSold} sold)`)
+            .join("\n");
+
+          setBotResponse(`${message}\n\n${list}`);
+          break;
+
         case "show out-of-stock products":
           navigate("/manageProducts?status=out-of-stock");
           break;
         case "show recent orders":
           navigate("/manageOrder?filter=recent");
           break;
-
         case "show user statistics":
           navigate("/dashboard");
           break;
@@ -87,10 +162,14 @@ const AdminChatBot = () => {
     <>
       {/* Floating Chatbot Button */}
       <button
-        className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-md z-50 hover:bg-blue-700 transition"
+        className="fixed bottom-4 right-4  text-black border border-black px-4 py-2 rounded-full shadow-md z-50 hover:bg-gray-300 transition"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? "Close" : "Chat"}
+        {isOpen ? (
+          "Close"
+        ) : (
+          <img src={chatbot} alt="Chatbot" className="w-12 h-12" />
+        )}
       </button>
 
       {/* Chatbot Panel */}
@@ -118,17 +197,25 @@ const AdminChatBot = () => {
             placeholder="Ask something..."
             className="border w-full px-3 py-2 rounded-md text-sm mb-2"
           />
-          <button
-            onClick={handleSend}
-            className="bg-blue-600 text-white w-full py-2 rounded-md"
-          >
-            Send
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSend}
+              className="bg-blue-600 text-white w-full py-2 rounded-md"
+            >
+              Send
+            </button>
+            <button
+              onClick={handleVoiceInput}
+              className=" text-white px-3 rounded-full bg-gray-300"
+            >
+              <img src={mic} alt="Voice Input" className="w-6 h-6" />
+            </button>
+          </div>
 
           {botResponse && (
-            <div className="mt-3 bg-gray-100 p-2 text-sm rounded-md">
+            <pre className="mt-3 bg-gray-100 p-2 text-sm rounded-md whitespace-pre-wrap break-words max-w-full ">
               {botResponse}
-            </div>
+            </pre>
           )}
         </div>
       )}

@@ -9,16 +9,38 @@ import axios from "axios";
 const Dashboard = () => {
   const [product, setProduct] = useState([]);
   const [vendor, setVendor] = useState([]);
+  const [stats, setStats] = useState({
+    totalSales: 0,
+    totalIncome: 0,
+    OrdersPaid: 0,
+    totalVisitor: 5,
+  });
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const productResponse = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedProducts`,
+        const dashboardstatsres = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getDashboardData`,
           {
             withCredentials: true,
           }
         );
+        setStats({
+          totalSales: dashboardstatsres.data.totalSales,
+          totalIncome: dashboardstatsres.data.totalIncome,
+          OrdersPaid: dashboardstatsres.data.totalPaidOrders,
+        });
+
+        const productResponse = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getTopSellingProducts?range=month`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (productResponse.data?.topProducts) {
+          setProduct(productResponse.data.topProducts);
+        }
         const vendorResponse = await axios.get(
           `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedVendors`,
           {
@@ -26,9 +48,7 @@ const Dashboard = () => {
           }
         );
         console.log("ProductResponse", productResponse.data);
-        if (productResponse.data) {
-          setProduct(productResponse.data.data);
-        }
+
         if (vendorResponse.data) {
           setVendor(vendorResponse.data.data);
         }
@@ -53,28 +73,30 @@ const Dashboard = () => {
           <img src={sales} className="w-16 h-14"></img>
           <div>
             <p className="text-xl font-bold">Total Sales</p>
-            <p className="font-semibold">Rs 5000</p>
+            <p className="font-semibold">{stats.totalSales}</p>
           </div>
         </div>
         <div className="flex my-2 border border-gray-400 shadow-md p-4 rounded-md">
           <img src={income} className="w-16 h-14"></img>
           <div>
             <p className="text-xl font-bold">Total Income</p>
-            <p className="font-semibold">Rs 2000</p>
+            <p className="font-semibold">Rs {stats.totalIncome}</p>
           </div>
         </div>
         <div className="flex my-2 border border-gray-400 shadow-md p-4 rounded-md">
           <img src={order} className="w-16 h-14"></img>
           <div>
             <p className="text-xl font-bold">Orders Paid</p>
-            <p className="font-semibold">Rs 5000</p>
+            <p className="font-semibold">{stats.OrdersPaid}</p>
           </div>
         </div>
         <div className="flex my-2 border border-gray-400 shadow-md p-4 rounded-md">
           <img src={visitor} className="w-16 h-14"></img>
           <div>
             <p className="text-xl font-bold">Total Visitor</p>
-            <p className="font-semibold">1000</p>
+            <p className="font-semibold">
+              {!stats.totalVisitor ? 5 : stats.totalVisitor}
+            </p>
           </div>
         </div>
       </div>
@@ -86,20 +108,21 @@ const Dashboard = () => {
             <p className="text-2xl font-bold">Top products</p>
             <button>View all</button>
           </div>
-          {product.slice(0, 3).map((prod, index) => (
-            <div key={index} className="flex items-center my-6">
-              {/* <p >{prod}</p> */}
-              <img
-                src={prod.images[0]}
-                className="w-12 h-12 border border-gray-300 rounded-lg p-1 bg-gray-300 ml-2 "
-                alt="productimg"
-              />
-              <div className="flex flex-col mx-8  ">
-                <p className="text-base/6">{prod.name}</p>
-                <p className="text-base/6">{`${prod.stock} Items`}</p>
+          {Array.isArray(product) &&
+            product.slice(0, 3).map((prod, index) => (
+              <div key={index} className="flex items-center my-6">
+                {/* <p >{prod}</p> */}
+                <img
+                  src={prod.image}
+                  className="w-12 h-12 border border-gray-300 rounded-lg p-1 bg-gray-300 ml-2 "
+                  alt="productimg"
+                />
+                <div className="flex flex-col mx-8  ">
+                  <p className="text-base/6">{prod.name}</p>
+                  <p className="text-base/6">{`${prod.totalSold} Items Sold`}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Top Vendor Section */}
@@ -118,7 +141,7 @@ const Dashboard = () => {
               />
               <div className="flex flex-col mx-8  ">
                 <p className="text-base/6">{vend.name}</p>
-                <p className="text-base/6">{`${vend.totalOrders} Purchases`}</p>
+                <p className="text-base/6">{`${vend.totalOrders} Products Sold`}</p>
               </div>
             </div>
           ))}

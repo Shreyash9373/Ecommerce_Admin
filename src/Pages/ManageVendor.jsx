@@ -44,22 +44,25 @@ const ManageVendor = () => {
   };
 
   // useeffect to set default dropdown value based on query param
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const queryStatus = params.get("status");
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const queryStatus = params.get("status");
 
-    // Update default dropdown if query param exists
-    if (queryStatus) {
-      setStatus(queryStatus);
-    }
-  }, [location.search]);
+  // Update default dropdown if query param exists
+  //   if (queryStatus) {
+  //     setStatus(queryStatus);
+  //   }
+  // }, [location.search]);
   useEffect(() => {
     const fetchVendor = async () => {
       try {
+        const params = new URLSearchParams(location.search);
+        const queryStatus = params.get("status") || "pending";
+        if (queryStatus !== status) setStatus(queryStatus); // keep UI dropdown synced
         let endpoint = "";
-        if (status === "pending") {
+        if (queryStatus === "pending") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getPendingVendors`;
-        } else if (status === "approved") {
+        } else if (queryStatus === "approved") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedVendors`;
         } else {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getRejectedVendors`;
@@ -99,7 +102,7 @@ const ManageVendor = () => {
     //   }
     // };
     fetchVendor();
-  }, [status, dispatch, recordsPerPage, searchQuery]);
+  }, [location.search, dispatch, recordsPerPage, searchQuery]);
   // 🔍 Search Functionality
   useEffect(() => {
     var filtered;
@@ -180,7 +183,7 @@ const ManageVendor = () => {
           withCredentials: true,
         }
       );
-      setStatus("approved");
+      navigate("/manageVendor?status=approved");
       // setVendors((prevVendors) =>
       //   prevVendors.map((vendor) =>
       //     vendor._id === vendorId ? { ...vendor, status: "approved" } : vendor
@@ -201,7 +204,7 @@ const ManageVendor = () => {
           withCredentials: true,
         }
       );
-      setStatus("rejected");
+      navigate("/manageVendor?status=rejected");
       // setVendors((prevVendors) =>
       //   prevVendors.map((vendor) =>
       //     vendor._id === vendorId ? { ...vendor, status: "rejected" } : vendor

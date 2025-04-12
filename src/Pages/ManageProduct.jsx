@@ -35,30 +35,33 @@ const ManageProduct = () => {
 
   const handleStatusChange = (event) => {
     const selectedValue = event.target.value;
-    setStatus(selectedValue);
-    console.log(status);
+    // setStatus(selectedValue);
+    // console.log(status);
     navigate(`/manageProducts?status=${selectedValue}`);
     // onChange(selectedValue); // Notify parent component (if needed)
   };
 
   //useeffect to set default dropdown value based on query param
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const queryStatus = params.get("status");
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const queryStatus = params.get("status");
 
-    // Update default dropdown if query param exists
-    if (queryStatus) {
-      setStatus(queryStatus);
-    }
-  }, [location.search]);
+  // Update default dropdown if query param exists
+  //   if (queryStatus) {
+  //     setStatus(queryStatus);
+  //   }
+  // }, [location.search]);
 
   useEffect(() => {
     const fetchproduct = async () => {
       try {
+        const params = new URLSearchParams(location.search);
+        const queryStatus = params.get("status") || "pending";
+        if (queryStatus !== status) setStatus(queryStatus); // keep UI dropdown synced
         let endpoint = "";
-        if (status === "pending") {
+        if (queryStatus === "pending") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getPendingProducts`;
-        } else if (status === "approved") {
+        } else if (queryStatus === "approved") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedProducts`;
         } else {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getRejectedProducts`;
@@ -70,13 +73,13 @@ const ManageProduct = () => {
         console.log("Response", response.data.data);
         setproducts(response.data.data);
         setFilteredProducts(response.data.data);
-        console.log("Pendingproducts", products);
+        //  console.log("Pendingproducts", products);
       } catch (error) {
         console.log("Error", error);
       }
     };
     fetchproduct();
-  }, [dispatch, recordsPerPage, status]);
+  }, [dispatch, recordsPerPage, location.search]);
 
   //  Search Functionality
   useEffect(() => {
@@ -106,7 +109,7 @@ const ManageProduct = () => {
           withCredentials: true,
         }
       );
-      setStatus("approved");
+      navigate("/manageProducts?status=approved");
       console.log("ApprovedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
@@ -122,7 +125,7 @@ const ManageProduct = () => {
           withCredentials: true,
         }
       );
-      setStatus("rejected");
+      navigate("/manageProducts?status=rejected");
       console.log("RejectedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
