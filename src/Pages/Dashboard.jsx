@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import sales from "../assets/sales.png";
 import order from "../assets/order.png";
 import income from "../assets/income.png";
 import visitor from "../assets/visitor.png";
 import axios from "axios";
+import SalesIncomeChart from "../Components/SalesIncomeChart";
 
 const Dashboard = () => {
   const [product, setProduct] = useState([]);
@@ -15,6 +17,7 @@ const Dashboard = () => {
     OrdersPaid: 0,
     totalVisitor: 5,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -42,17 +45,16 @@ const Dashboard = () => {
           setProduct(productResponse.data.topProducts);
         }
         const vendorResponse = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedVendors`,
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getTopVendors?range=month`,
           {
             withCredentials: true,
           }
         );
-        console.log("ProductResponse", productResponse.data);
+        console.log("vendorResponse", vendorResponse.data);
 
-        if (vendorResponse.data) {
-          setVendor(vendorResponse.data.data);
+        if (vendorResponse.data?.topVendors) {
+          setVendor(vendorResponse.data.topVendors);
         }
-        console.log("VendorResponse", vendorResponse.data);
       } catch (error) {
         console.log("Error", error);
       }
@@ -117,9 +119,12 @@ const Dashboard = () => {
                   className="w-12 h-12 border border-gray-300 rounded-lg p-1 bg-gray-300 ml-2 "
                   alt="productimg"
                 />
-                <div className="flex flex-col mx-8  ">
+                <div
+                  onClick={() => navigate(`/manageProducts/${prod.productId}`)}
+                  className="flex flex-col mx-8 cursor-pointer "
+                >
                   <p className="text-base/6">{prod.name}</p>
-                  <p className="text-base/6">{`${prod.totalSold} Items Sold`}</p>
+                  <p className="text-base/6">{`${prod.totalSold} quantities Sold`}</p>
                 </div>
               </div>
             ))}
@@ -139,14 +144,18 @@ const Dashboard = () => {
                 className="w-12 h-12 border border-gray-300 rounded-lg p-1 bg-gray-300 ml-2 "
                 alt="productimg"
               />
-              <div className="flex flex-col mx-8  ">
+              <div
+                onClick={() => navigate(`/manageVendor/${vend.vendorId}`)}
+                className="flex flex-col mx-8 cursor-pointer  "
+              >
                 <p className="text-base/6">{vend.name}</p>
-                <p className="text-base/6">{`${vend.totalOrders} Products Sold`}</p>
+                <p className="text-base/6">{`${vend.totalSold} Products Sold`}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
+      <SalesIncomeChart />
     </div>
   );
 };

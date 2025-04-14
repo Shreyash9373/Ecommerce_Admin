@@ -132,7 +132,27 @@ const AdminChatBot = () => {
           break;
 
         case "show out-of-stock products":
-          navigate("/manageProducts?status=out-of-stock");
+          try {
+            const response = await axios.get(
+              `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getOutOfStockProducts`,
+              { withCredentials: true }
+            );
+
+            const products = response.data.Products;
+
+            if (products.length === 0) {
+              setBotResponse("All products are in stock!");
+            } else {
+              const list = products
+                .map((p, idx) => `${idx + 1}. ${p.name} (Stock: ${p.stock})`)
+                .join("\n");
+
+              setBotResponse(`Out of stock products:\n\n${list}`);
+            }
+          } catch (error) {
+            console.error("Error fetching out-of-stock products", error);
+            setBotResponse("Failed to fetch out-of-stock products.");
+          }
           break;
         case "show recent orders":
           navigate("/manageOrder?filter=recent");
