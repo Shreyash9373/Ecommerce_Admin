@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentPage, setTotalPages } from "../redux/slices/paginationSlice";
+import Loader from "../Components/Loader.jsx";
+import { toast } from "react-toastify";
 
 const ManageVendor = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { currentPage, recordsPerPage, totalPages } = useSelector(
     (state) => state.pagination
   );
@@ -16,6 +19,7 @@ const ManageVendor = () => {
   const [filteredVendors, setFilteredVendors] = useState([]); //  Filtered Vendors
   const [allVendors, setAllVendors] = useState([]);
   const [searchTotalPages, setSearchTotalPages] = useState(1); //  Search Total Pages
+  const [loading, setLoading] = useState(false);
 
   //Pagination logic
   // totalPages = Math.ceil(vendors.length / recordsPerPage);
@@ -38,15 +42,30 @@ const ManageVendor = () => {
     const selectedValue = event.target.value;
     setStatus(selectedValue);
     console.log(status);
+    navigate(`/manageVendor?status=${selectedValue}`);
     // onChange(selectedValue); // Notify parent component (if needed)
   };
+
+  // useeffect to set default dropdown value based on query param
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const queryStatus = params.get("status");
+
+  // Update default dropdown if query param exists
+  //   if (queryStatus) {
+  //     setStatus(queryStatus);
+  //   }
+  // }, [location.search]);
   useEffect(() => {
     const fetchVendor = async () => {
       try {
+        const params = new URLSearchParams(location.search);
+        const queryStatus = params.get("status") || "pending";
+        if (queryStatus !== status) setStatus(queryStatus); // keep UI dropdown synced
         let endpoint = "";
-        if (status === "pending") {
+        if (queryStatus === "pending") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getPendingVendors`;
-        } else if (status === "approved") {
+        } else if (queryStatus === "approved") {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getApprovedVendors`;
         } else {
           endpoint = `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getRejectedVendors`;
@@ -86,7 +105,7 @@ const ManageVendor = () => {
     //   }
     // };
     fetchVendor();
-  }, [status, dispatch, recordsPerPage, searchQuery]);
+  }, [location.search, dispatch, recordsPerPage, searchQuery]);
   // 🔍 Search Functionality
   useEffect(() => {
     var filtered;
@@ -159,6 +178,7 @@ const ManageVendor = () => {
 
   const approveStatus = async (vendorId) => {
     try {
+      setLoading(true);
       console.log("vid", vendorId);
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/approveVendor/${vendorId}`,
@@ -167,20 +187,25 @@ const ManageVendor = () => {
           withCredentials: true,
         }
       );
-      setStatus("approved");
+      navigate("/manageVendor?status=approved");
       // setVendors((prevVendors) =>
       //   prevVendors.map((vendor) =>
       //     vendor._id === vendorId ? { ...vendor, status: "approved" } : vendor
       //   )
       // );
+      toast.success("Vendor Approved Successfully!");
       console.log("ApprovedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
+      toast.error("Error approving vendor!");
+    } finally {
+      setLoading(false);
     }
   };
 
   const rejectStatus = async (id) => {
     try {
+      setLoading(true);
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/rejectVendor/${id}`,
         {},
@@ -188,15 +213,19 @@ const ManageVendor = () => {
           withCredentials: true,
         }
       );
-      setStatus("rejected");
+      navigate("/manageVendor?status=rejected");
       // setVendors((prevVendors) =>
       //   prevVendors.map((vendor) =>
       //     vendor._id === vendorId ? { ...vendor, status: "rejected" } : vendor
       //   )
       // );
+      toast.success("Vendor Rejected Successfully!");
       console.log("RejectedResponse", response.data);
     } catch (error) {
       console.log("Error:", error);
+      toast.error("Error rejecting vendor!");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -226,76 +255,80 @@ const ManageVendor = () => {
       </div>
 
       {/* ✅ Fix: Scrollable Table Without Affecting Page Layout */}
-      <div className="md:w-full w-screen overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700 text-sm">
-              <th className="p-3 border">ID</th>
-              <th className="p-3 border">Name</th>
-              <th className="p-3 border">Email</th>
-              <th className="p-3 border">Phone</th>
-              <th className="p-3 border">Store Name</th>
-              <th className="p-3 border">Status</th>
-              <th className="p-3 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentVendors.length > 0 ? (
-              currentVendors.map((vendor) => (
-                <tr
-                  key={vendor._id}
-                  className="text-center text-sm even:bg-gray-100"
-                >
-                  <td className="p-3 border">{vendor._id || "NA"}</td>
-                  <td className="p-3 border">{vendor.name || "NA"}</td>
-                  <td className="p-3 border">{vendor.email || "NA"}</td>
-                  <td className="p-3 border">{vendor.phone || "NA"}</td>
-                  <td className="p-3 border">{vendor.storeName || "NA"}</td>
-                  <td className="p-3 border capitalize">
-                    {vendor.status || "NA"}
-                  </td>
-                  <td className="p-3 border flex flex-wrap gap-2 justify-center">
-                    <button
-                      onClick={() => approveStatus(vendor._id)}
-                      disabled={vendor.status === "approved"}
-                      className={`px-3 py-1 rounded-md text-white text-sm ${
-                        vendor.status === "approved"
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-green-500 hover:bg-green-700"
-                      }`}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => rejectStatus(vendor._id)}
-                      disabled={vendor.status === "rejected"}
-                      className={`px-3 py-1 rounded-md text-white text-sm ${
-                        vendor.status === "rejected"
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-red-500 hover:bg-red-700"
-                      }`}
-                    >
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => navigate(`/manageVendor/${vendor._id}`)}
-                      className="bg-blue-400 hover:bg-blue-500 px-3 py-1 rounded-md text-white text-sm"
-                    >
-                      View
-                    </button>
+      {loading ? (
+        <Loader message="Updating status..." />
+      ) : (
+        <div className="md:w-full w-screen overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700 text-sm">
+                <th className="p-3 border">ID</th>
+                <th className="p-3 border">Name</th>
+                <th className="p-3 border">Email</th>
+                <th className="p-3 border">Phone</th>
+                <th className="p-3 border">Store Name</th>
+                <th className="p-3 border">Status</th>
+                <th className="p-3 border">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentVendors.length > 0 ? (
+                currentVendors.map((vendor) => (
+                  <tr
+                    key={vendor._id}
+                    className="text-center text-sm even:bg-gray-100"
+                  >
+                    <td className="p-3 border">{vendor._id || "NA"}</td>
+                    <td className="p-3 border">{vendor.name || "NA"}</td>
+                    <td className="p-3 border">{vendor.email || "NA"}</td>
+                    <td className="p-3 border">{vendor.phone || "NA"}</td>
+                    <td className="p-3 border">{vendor.storeName || "NA"}</td>
+                    <td className="p-3 border capitalize">
+                      {vendor.status || "NA"}
+                    </td>
+                    <td className="p-3 border flex flex-wrap gap-2 justify-center">
+                      <button
+                        onClick={() => approveStatus(vendor._id)}
+                        disabled={vendor.status === "approved"}
+                        className={`px-3 py-1 rounded-md text-white text-sm ${
+                          vendor.status === "approved"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-green-500 hover:bg-green-700"
+                        }`}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => rejectStatus(vendor._id)}
+                        disabled={vendor.status === "rejected"}
+                        className={`px-3 py-1 rounded-md text-white text-sm ${
+                          vendor.status === "rejected"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-red-500 hover:bg-red-700"
+                        }`}
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => navigate(`/manageVendor/${vendor._id}`)}
+                        className="bg-blue-400 hover:bg-blue-500 px-3 py-1 rounded-md text-white text-sm"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="p-4 border text-gray-500">
+                    No vendors available
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="p-4 border text-gray-500">
-                  No vendors available
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
       {(totalPages > 1 || searchTotalPages > 1) && (
         <div className="flex justify-center items-center my-4">
           <button
