@@ -145,23 +145,25 @@ const ManageProduct = () => {
     }
   };
   return (
-    <div className="py-4 px-1 bg-white shadow-lg rounded-lg ">
-      <h1 className="text-3xl font-semibold mb-2 text-gray-800">Products</h1>
-      <p className="text-gray-600">List of products</p>
+    <div className="py-4 px-1 bg-white text-black dark:bg-gray-800 dark:text-white shadow-lg rounded-lg transition-colors duration-300">
+      <h1 className="text-3xl font-semibold mb-2 text-gray-800 dark:text-white ">
+        Products
+      </h1>
+      <p className="text-gray-600 dark:text-gray-300">List of products</p>
       {/*  Search Input */}
       <input
         type="text"
         placeholder="Search by name,category,subCategory or brand..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 my-3"
+        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 my-3 dark:text-white dark:bg-gray-800"
       />
       {/* Status Dropdown */}
-      <div className="w-full md:w-[50%] mt-4 mb-6">
+      <div className="w-full md:w-[50%] mt-4 mb-6 dark:text-black">
         <select
           value={status}
           onChange={handleStatusChange}
-          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
         >
           <option value="pending">Pending</option>
           <option value="approved">Approved</option>
@@ -174,10 +176,10 @@ const ManageProduct = () => {
       {loading ? (
         <Loader message="Loading Products..." />
       ) : (
-        <div className="md:w-full w-screen overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="md:w-full w-screen overflow-x-auto ">
+          <table className="w-full border-collapse border border-gray-300 dark:border-gray-600  ">
             <thead>
-              <tr className="bg-gray-200 text-gray-700 text-sm">
+              <tr className="bg-gray-200 text-gray-700 text-sm dark:text-white dark:bg-gray-800">
                 <th className="p-3 border">ID</th>
                 <th className="p-3 border">Name</th>
                 <th className="p-3 border">Category</th>
@@ -187,12 +189,12 @@ const ManageProduct = () => {
                 <th className="p-3 border">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className=" ">
               {currentproducts.length > 0 ? (
                 currentproducts.map((product) => (
                   <tr
                     key={product._id}
-                    className="text-center text-sm even:bg-gray-100"
+                    className="text-center text-sm even:bg-gray-100 dark:bg-black dark:text-white"
                   >
                     <td className="p-3 border">{product._id || "NA"}</td>
                     <td className="p-3 border">{product.name || "NA"}</td>
@@ -254,7 +256,7 @@ const ManageProduct = () => {
           <button
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 dark:bg-gray-800 dark:text-white dark:disabled:bg-gray-600"
           >
             prev
           </button>
@@ -266,7 +268,7 @@ const ManageProduct = () => {
           <button
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 dark:bg-gray-800 dark:text-white dark:disabled:bg-gray-600"
           >
             Next
           </button>

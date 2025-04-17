@@ -40,6 +40,28 @@ const AppContent = () => {
     }
   }, [isAuthenticated, location.pathname]);
 
+  const theme = useSelector((state) => state.admin.theme);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [theme]);
+
+  // const theme = useSelector((state) => state.admin.theme);
+
+  // useEffect(() => {
+  //   const root = window.document.documentElement;
+  //   if (theme === "dark") {
+  //     root.classList.add("dark");
+  //   } else {
+  //     root.classList.remove("dark");
+  //   }
+  // }, [theme]);
+
   return (
     <div className="mt-16">
       <ToastContainer
@@ -95,9 +117,11 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
+  <div className="min-h-screen bg-white text-black dark:bg-gray-800 dark:text-white transition-colors duration-300">
+    <Router>
+      <AppContent />
+    </Router>
+  </div>
 );
 
 export default App;

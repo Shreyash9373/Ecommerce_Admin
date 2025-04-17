@@ -159,9 +159,9 @@ const ManageCategory = () => {
   };
 
   return (
-    <div className="px-3 py-4 bg-gray-100 min-h-screen max-w-full z-[999]">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+    <div className="px-3 py-4 bg-gray-100 min-h-screen max-w-full z-[999] dark:bg-gray-800 dark:text-white">
+      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-black dark:text-white">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4 dark:text-white">
           {editingId ? "Edit Category" : "Add Category"}
         </h2>
 
@@ -176,7 +176,7 @@ const ManageCategory = () => {
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             />
             {errors.name && (
               <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -188,7 +188,7 @@ const ManageCategory = () => {
             <input
               type="text"
               {...register("slug")}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             />
           </div>
 
@@ -196,7 +196,7 @@ const ManageCategory = () => {
             <label className="text-sm font-semibold">Parent Category</label>
             <select
               {...register("parentCategory")}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             >
               <option value="">None</option>
 
@@ -213,7 +213,7 @@ const ManageCategory = () => {
             <label className="text-sm font-semibold">Description</label>
             <textarea
               {...register("description")}
-              className="w-full h-10 p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full h-10 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             ></textarea>
           </div>
 
@@ -223,7 +223,7 @@ const ManageCategory = () => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             />
           </div>
 
@@ -231,7 +231,7 @@ const ManageCategory = () => {
             <label className="text-sm font-semibold">Status</label>
             <select
               {...register("status")}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -262,15 +262,15 @@ const ManageCategory = () => {
       </div>
 
       {/* Categories Table */}
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-md max-w-full overflow-x-auto">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-md max-w-full overflow-x-auto dark:bg-black dark:text-white">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4 dark:text-white ">
           Manage Categories
         </h2>
 
         {(currentCategory || []).length > 0 ? (
           <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-gray-200">
+              <tr className="bg-gray-200 dark:bg-gray-700">
                 <th className="p-2 border">CategoryName</th>
                 <th className="p-2 border">ParentCategory</th>
                 <th className="p-2 border">Actions</th>
@@ -307,7 +307,7 @@ const ManageCategory = () => {
           <button
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-500 hover:bg-gray-300 disabled:bg-gray-400 dark:disabled:bg-gray-500"
           >
             prev
           </button>
@@ -319,7 +319,7 @@ const ManageCategory = () => {
           <button
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-500 hover:bg-gray-300 disabled:bg-gray-400 dark:disabled:bg-gray-500"
           >
             Next
           </button>

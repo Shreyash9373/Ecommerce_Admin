@@ -11,9 +11,12 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
+import { useSelector } from "react-redux";
 
 const SalesIncomeChart = () => {
   const [type, setType] = useState("weekly");
+  const theme = useSelector((state) => state.admin.theme); // or however you store theme
+
   // const [salesData, setSalesData] = useState([]);
   // const [incomeData, setIncomeData] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -85,7 +88,7 @@ const SalesIncomeChart = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Sales & Income Stats</h2>
         <select
-          className="p-2 border rounded"
+          className="p-2 border rounded dark:bg-black dark:text-white"
           value={type}
           onChange={(e) => setType(e.target.value)}
         >
@@ -104,29 +107,45 @@ const SalesIncomeChart = () => {
             margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis className="my-2" dataKey="label">
+            <XAxis
+              className="my-2"
+              dataKey="label"
+              stroke={theme === "dark" ? "#fff" : "#000"}
+            >
               <Label
                 value={getXAxisLabel()}
                 offset={-10}
                 position="insideBottom"
                 style={{
-                  fill: "#555", // text color
+                  fill: theme === "dark" ? "#fff" : "#555", // text color
                   fontSize: 14,
                   fontWeight: 500,
                 }}
               />
             </XAxis>
             <YAxis
+              stroke={theme === "dark" ? "#fff" : "#000"}
               label={{
                 value: "Sales",
                 angle: -90,
                 position: "insideLeft",
                 fontSize: 14,
                 fontWeight: 500,
-                fill: "#555",
+                fill: theme === "dark" ? "#fff" : "#555",
               }}
             />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: theme === "dark" ? "#1f2937" : "#fff",
+                borderColor: theme === "dark" ? "#4b5563" : "#ccc",
+              }}
+              labelStyle={{
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+              itemStyle={{
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+            />
             <Legend />
             <Line
               type="monotone"
@@ -147,29 +166,41 @@ const SalesIncomeChart = () => {
             margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label">
+            <XAxis stroke={theme === "dark" ? "#fff" : "#000"} dataKey="label">
               <Label
                 value={getXAxisLabel()}
                 offset={-10}
                 position="insideBottom"
                 style={{
-                  fill: "#555", // text color
+                  fill: theme === "dark" ? "#fff" : "#555", // text color
                   fontSize: 14,
                   fontWeight: 500,
                 }}
               />
             </XAxis>
             <YAxis
+              stroke={theme === "dark" ? "#fff" : "#000"}
               label={{
                 value: "Income (Rs)",
                 angle: -90,
                 position: "insideLeft",
                 fontSize: 14,
                 fontWeight: 500,
-                fill: "#555", // text color
+                fill: theme === "dark" ? "#fff" : "#555",
               }}
             />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: theme === "dark" ? "#1f2937" : "#fff",
+                borderColor: theme === "dark" ? "#4b5563" : "#ccc",
+              }}
+              labelStyle={{
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+              itemStyle={{
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
+            />
             <Legend />
             <Line
               type="monotone"

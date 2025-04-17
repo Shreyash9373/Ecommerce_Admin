@@ -182,7 +182,7 @@ const AdminChatBot = () => {
     <>
       {/* Floating Chatbot Button */}
       <button
-        className="fixed bottom-4 right-4  text-black border border-black px-4 py-2 rounded-full shadow-md z-50 hover:bg-gray-300 transition"
+        className="fixed bottom-4 right-4  text-black border border-black dark:border-white px-4 py-2 rounded-full shadow-md z-50 hover:bg-gray-300 transition dark:text-white dark:hover:text-black dark:hover:bg-white"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? (
@@ -194,9 +194,11 @@ const AdminChatBot = () => {
 
       {/* Chatbot Panel */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4">
+        <div className="fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4 dark:bg-black dark:border dark:border-gray-300">
           <h2 className="text-lg font-semibold mb-2">Hi Admin! 👋</h2>
-          <p className="text-sm mb-3 text-gray-600">How can i help you 😊</p>
+          <p className="text-sm mb-3 text-gray-600 dark:text-white">
+            How can i help you 😊
+          </p>
           <ul className="space-y-2 mb-4">
             {promptSuggestions.map((item, idx) => (
               <li key={idx}>
@@ -215,7 +217,7 @@ const AdminChatBot = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ask something..."
-            className="border w-full px-3 py-2 rounded-md text-sm mb-2"
+            className="border w-full px-3 py-2 rounded-md text-sm mb-2 dark:bg-gray-800"
           />
           <div className="flex gap-2">
             <button

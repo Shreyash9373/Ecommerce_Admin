@@ -12,7 +12,7 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { MdCategory } from "react-icons/md";
 
 import { HiHome, HiMenuAlt3 } from "react-icons/hi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logoutAdmin } from "../redux/slices/adminSlice";
@@ -20,6 +20,7 @@ import { logoutAdmin } from "../redux/slices/adminSlice";
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const LogoutAdmin = async () => {
     try {
       const response = await axios.post(
@@ -43,7 +44,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     <>
       {/* Sidebar */}
       <div
-        className={`fixed mt-12 bottom-0  top-0 left-0 w-64 text-lg flex flex-col items-start border-r border-gray-300 bg-white min-h-screen p-5 shadow-lg z-40 transform transition-transform duration-300 ease-in-out 
+        className={`fixed mt-12 bottom-0  top-0 left-0 w-64 text-lg flex flex-col items-start border-r border-gray-300 bg-white dark:bg-black   min-h-screen p-5 shadow-lg z-40 transform transition-transform duration-300 ease-in-out 
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
         style={{ transition: "transform 0.3s ease-in-out" }} // Ensure smooth transition
       >
@@ -58,7 +59,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div> */}
 
         <nav className="min-w-full h-[90%] flex flex-col">
-          <ul className="flex-grow space-y-4">
+          <ul className="flex-grow space-y-4 ">
             {[
               { to: "/dashboard", icon: <HiHome />, label: "Dashboard" },
               {
@@ -81,7 +82,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <li key={to} className="w-full">
                 <Link
                   to={to}
-                  className="flex items-center gap-3 text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md w-full hover:bg-gray-100 md:mt-0 md:text-lg text-xl"
+                  className="flex items-center gap-3 text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md w-full hover:bg-gray-100 md:mt-0 md:text-lg text-xl dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-400"
                   onClick={() => toggleSidebar(false)}
                 >
                   <span className="text-xl">{icon}</span>

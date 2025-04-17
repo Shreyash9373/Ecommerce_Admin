@@ -229,16 +229,18 @@ const ManageVendor = () => {
     }
   };
   return (
-    <div className="py-4 px-1 bg-white shadow-lg rounded-lg ">
-      <h1 className="text-3xl font-semibold mb-2 text-gray-800">Vendors</h1>
-      <p className="text-gray-600">List of Vendors</p>
+    <div className="py-4 px-1 bg-white shadow-lg rounded-lg dark:bg-gray-800 ">
+      <h1 className="text-3xl font-semibold mb-2 text-gray-800 dark:text-white">
+        Vendors
+      </h1>
+      <p className="text-gray-600 dark:text-gray-300">List of Vendors</p>
       {/*  Search Input */}
       <input
         type="text"
         placeholder="Search by name, email, or phone..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 my-3"
+        className="w-full md:w-1/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 my-3"
       />
 
       {/* Status Dropdown */}
@@ -246,7 +248,7 @@ const ManageVendor = () => {
         <select
           value={status}
           onChange={handleStatusChange}
-          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
+          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-800"
         >
           <option value="pending">Pending</option>
           <option value="approved">Approved</option>
@@ -261,7 +263,7 @@ const ManageVendor = () => {
         <div className="md:w-full w-screen overflow-x-auto">
           <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-gray-200 text-gray-700 text-sm">
+              <tr className="bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-white text-sm">
                 <th className="p-3 border">ID</th>
                 <th className="p-3 border">Name</th>
                 <th className="p-3 border">Email</th>
@@ -276,7 +278,7 @@ const ManageVendor = () => {
                 currentVendors.map((vendor) => (
                   <tr
                     key={vendor._id}
-                    className="text-center text-sm even:bg-gray-100"
+                    className="text-center text-sm dark:bg-black dark:text-white even:bg-gray-100"
                   >
                     <td className="p-3 border">{vendor._id || "NA"}</td>
                     <td className="p-3 border">{vendor.name || "NA"}</td>
@@ -334,7 +336,7 @@ const ManageVendor = () => {
           <button
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 dark:bg-gray-800 dark:text-white dark:disabled:bg-gray-600"
           >
             prev
           </button>
@@ -346,7 +348,7 @@ const ManageVendor = () => {
           <button
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400"
+            className="px-3 py-1 rounded-md border bg-gray-200 hover:bg-gray-300 disabled:bg-gray-400 dark:bg-gray-800 dark:text-white dark:disabled:bg-gray-600"
           >
             Next
           </button>

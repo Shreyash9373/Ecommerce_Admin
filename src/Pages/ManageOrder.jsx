@@ -40,7 +40,7 @@ const ManageOrder = () => {
       <h2 className="text-3xl font-semibold mb-6 text-start">Manage Orders</h2>
 
       {/* Tabs */}
-      <div className="w-full max-w-2xl flex my-4 p-2 py-1 justify-between items-center bg-gray-200 rounded-full mx-auto text-xs">
+      <div className="w-full max-w-2xl flex my-4 p-2 py-1 justify-between items-center bg-gray-200 rounded-full mx-auto text-xs dark:bg-gray-600 ">
         {[
           "Processing",
           "Pending",
@@ -54,7 +54,7 @@ const ManageOrder = () => {
             className={`flex-1 min-w-[80px] py-2 px-2 rounded-full transition-all text-[10px] sm:text-sm ${
               activeTab === tab
                 ? "bg-blue-400 font-bold text-slate-900  shadow-md"
-                : "text-gray-600"
+                : "text-gray-600 dark:text-white"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -71,17 +71,17 @@ const ManageOrder = () => {
         orders?.map((order) => (
           <div
             key={order._id}
-            className="mb-6 m-6 p-4  border  border-gray-300 rounded-lg shadow-md bg-white"
+            className="mb-6 m-6 p-4  border  border-gray-300 rounded-lg shadow-md bg-white dark:bg-gray-800"
           >
             <p className="font-semibold text-lg mb-2">Order ID: {order._id}</p>
 
             {/* Product Details and Payment Details  */}
             <div className=" w-full flex flex-col justify-around">
               {/* Product Details */}
-              <div className="mb-4 p-3 bg-gray-200 rounded-md">
+              <div className="mb-4 p-3 bg-gray-200 rounded-md dark:bg-black dark:text-white">
                 <h3 className="text-lg font-semibold mb-2">Product Details:</h3>
                 {order.items.map((item) => (
-                  <div key={item._id} className="text-gray-800">
+                  <div key={item._id} className="text-gray-800 dark:text-white">
                     <p>
                       <span className="font-medium">Product Name: </span>{" "}
                       {item.productSnapshot.name}
@@ -99,7 +99,7 @@ const ManageOrder = () => {
               </div>
 
               {/* Payment Details */}
-              <div className="mb-4 p-3 bg-gray-200 rounded-md">
+              <div className="mb-4 p-3 bg-gray-200 rounded-md dark:bg-black dark:text-white">
                 <h3 className="text-lg font-semibold mb-2">Payment Details:</h3>
                 <p>
                   <span className="font-medium">Payment Amount: </span>{" "}
@@ -117,7 +117,7 @@ const ManageOrder = () => {
             </div>
 
             {/* Shipping Address */}
-            <div className="mb-4 p-3 bg-gray-200 rounded-md">
+            <div className="mb-4 p-3 bg-gray-200 rounded-md dark:bg-black dark:text-white">
               <h3 className="text-lg font-semibold mb-2">Shipping Address:</h3>
               <p>
                 <span className="font-medium">Street:</span>{" "}
@@ -142,7 +142,7 @@ const ManageOrder = () => {
             </div>
 
             {/* Change Status */}
-            <p className="mb-4 text-gray-700">
+            <p className="mb-4 text-gray-700 dark:text-white">
               <span className="font-semibold">Current Status:</span>{" "}
               {order.status}
             </p>

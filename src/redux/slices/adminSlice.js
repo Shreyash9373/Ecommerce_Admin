@@ -4,6 +4,7 @@ const initialState = {
   admin: null, // Stores admin details
   isAuthenticated: false, // Tracks authentication state
   loading: true,
+  theme: localStorage.getItem("theme") || "light",
 };
 
 const adminSlice = createSlice({
@@ -29,9 +30,23 @@ const adminSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+    toggleTheme: (state) => {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", state.theme);
+    },
+    setTheme: (state, action) => {
+      state.theme = action.payload;
+      localStorage.setItem("theme", action.payload);
+    },
   },
 });
 
-export const { setAdmin, logoutAdmin, setAuthStatus, setLoading } =
-  adminSlice.actions;
+export const {
+  setAdmin,
+  logoutAdmin,
+  setAuthStatus,
+  setLoading,
+  toggleTheme,
+  setTheme,
+} = adminSlice.actions;
 export default adminSlice.reducer;
