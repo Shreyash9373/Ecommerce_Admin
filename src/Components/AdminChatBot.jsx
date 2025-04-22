@@ -235,7 +235,7 @@ const AdminChatBot = () => {
           </div>
 
           {botResponse && (
-            <pre className="mt-3 bg-gray-100 p-2 text-sm rounded-md whitespace-pre-wrap break-words max-w-full ">
+            <pre className="mt-3 dark:bg-black dark:text-white bg-gray-100 p-2 text-sm rounded-md whitespace-pre-wrap break-words max-w-full ">
               {botResponse}
             </pre>
           )}

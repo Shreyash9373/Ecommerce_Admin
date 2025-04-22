@@ -52,8 +52,10 @@ const VendorDetails = () => {
   };
   return (
     <div className="px-2">
-      <h1 className="text-green-900 font-bold mt-2">My Profile</h1>
-      <div className="flex my-4 border border-gray-300 shadow-md rounded-md py-2">
+      <h1 className="text-green-900 font-bold mt-2 dark:text-white">
+        My Profile
+      </h1>
+      <div className="flex my-4 border border-gray-300 shadow-md rounded-md py-2 dark:bg-black dark:text-white">
         <img
           className="w-24 h-24 rounded-full mx-2"
           src={vendor.avatar}
@@ -65,37 +67,41 @@ const VendorDetails = () => {
         </div>
       </div>
 
-      <div className=" my-4 border border-gray-300 shadow-md rounded-md py-2">
-        <h2 className="mx-2 text-green-900 font-bold">Personal Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mx-2 my-3">
+      <div className=" my-4 border border-gray-300 shadow-md rounded-md py-2 dark:bg-black ">
+        <h2 className="mx-2 text-green-900 font-bold dark:text-white">
+          Personal Information
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mx-2 my-3 ">
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">Name</p>
+            <p className="text-gray-600 dark:text-white">Name</p>
             <p>{vendor.name}</p>
           </div>
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">Email</p>
+            <p className="text-gray-600 dark:text-white">Email</p>
             <p>{vendor.email}</p>
           </div>
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">Phone</p>
+            <p className="text-gray-600 dark:text-white">Phone</p>
             <p>{vendor.phone}</p>
           </div>
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">Store Name</p>
+            <p className="text-gray-600 dark:text-white">Store Name</p>
             <p>{vendor.storeName}</p>
           </div>
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">BusinessType</p>
+            <p className="text-gray-600 dark:text-white">BusinessType</p>
             <p>{vendor.businessType}</p>
           </div>
           <div className="flex justify-between md:flex-col my-2">
-            <p className="text-gray-600">Status</p>
+            <p className="text-gray-600 dark:text-white">Status</p>
             <p>{vendor.status}</p>
           </div>
         </div>
       </div>
-      <div className="my-4 border border-gray-300 shadow-md rounded-md py-2 p-4">
-        <h2 className="text-green-900 font-bold mx-2">Uploaded Documents</h2>
+      <div className="my-4 border border-gray-300 shadow-md rounded-md py-2 p-4 dark:bg-black">
+        <h2 className="text-green-900 font-bold mx-2 dark:text-white">
+          Uploaded Documents
+        </h2>
         {documents?.length > 0 ? (
           <div className="space-y-2">
             {documents.map((document, index) => (
