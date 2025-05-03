@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import chatbot from "../assets/chatbot.png";
 import mic from "../assets/mic.png";
+import { useDispatch } from "react-redux";
+import { setTheme, toggleTheme } from "../redux/slices/adminSlice";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -29,6 +31,7 @@ const AdminChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   let isVoiceQuery = false;
+  const dispatch = useDispatch();
 
   const handleVoiceInput = () => {
     isVoiceQuery = true;
@@ -154,8 +157,11 @@ const AdminChatBot = () => {
             setBotResponse("Failed to fetch out-of-stock products.");
           }
           break;
-        case "show recent orders":
-          navigate("/manageOrder?filter=recent");
+        case "switch to dark mode":
+          dispatch(setTheme("dark"));
+          break;
+        case "switch to light mode":
+          dispatch(setTheme("light"));
           break;
         case "show user statistics":
           navigate("/dashboard");

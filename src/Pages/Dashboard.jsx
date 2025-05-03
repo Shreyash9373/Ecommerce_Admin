@@ -32,7 +32,7 @@ const Dashboard = () => {
     totalSales: 0,
     totalIncome: 0,
     OrdersPaid: 0,
-    totalVisitor: 5,
+    totalVisitor: 0,
   });
   const navigate = useNavigate();
 
@@ -49,6 +49,7 @@ const Dashboard = () => {
           totalSales: dashboardstatsres.data.totalSales,
           totalIncome: dashboardstatsres.data.totalIncome,
           OrdersPaid: dashboardstatsres.data.totalPaidOrders,
+          totalVisitor: dashboardstatsres.data.totalVisitors,
         });
 
         const productResponse = await axios.get(
@@ -62,7 +63,7 @@ const Dashboard = () => {
           setProduct(productResponse.data.topProducts);
         }
         const vendorResponse = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getTopVendors?range=month`,
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/admin/getTopVendors?range=year`,
           {
             withCredentials: true,
           }
@@ -141,7 +142,6 @@ const Dashboard = () => {
         <div className="w-[90%] border border-gray-400 rounded-md m-auto lg:w-[60%] lg:ml-3 p-2 dark:bg-black">
           <div className="flex justify-between">
             <p className="text-2xl font-bold">Top products</p>
-            <button>View all</button>
           </div>
           {Array.isArray(product) &&
             product.slice(0, 3).map((prod, index) => (
@@ -167,7 +167,6 @@ const Dashboard = () => {
         <div className="w-[90%] border border-gray-400 rounded-md m-auto p-2 my-4 lg:w-[60%] lg:ml-2 lg:mr-2 dark:bg-black ">
           <div className="flex justify-between">
             <p className="text-2xl font-bold">Top Vendors</p>
-            <button>View all</button>
           </div>
           {vendor.slice(0, 3).map((vend, index) => (
             <div key={index} className="flex items-center my-6">
